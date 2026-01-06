@@ -53,19 +53,22 @@ def ask_ai(messages: list) -> list:
 
 def mainloop() -> None:
     global messages
-    userinput = input("> ")
-    match userinput:
-        case _:
-            if groq_key:
-                messages = append_message(messages, userinput, "user")
-                response = ask_ai(messages)
-                messages = append_message(messages, response, "assistant")
-                
-            else:
-                log("warn", "AI was attempted to be triggered but no API Key was set.")
-                print(
-                    "Leider hab ich dich nicht ganz verstanden, bitte versuche es nochmal."
-                )
+    while True:
+        userinput = input("> ")
+        match userinput:
+            case "/quit":
+                break
+            case _:
+                if groq_key:
+                    messages = append_message(messages, userinput, "user")
+                    response = ask_ai(messages)
+                    messages = append_message(messages, response, "assistant")
+
+                else:
+                    log("warn", "AIas attempted to be triggered but no API Key was set.")
+                    print(
+                        "Leider hab ich dich nicht ganz verstanden, bitte versuche es nochmal."
+                    )
 
 messages: list
 def main() -> None:
@@ -77,8 +80,8 @@ def main() -> None:
             },
         ]
     print("Wie kann ich dir weiterhelfen?")
-    while True:
-        mainloop()
+    mainloop()
+    print("bye bye")
     
 
 
