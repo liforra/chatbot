@@ -3,10 +3,10 @@ from lutils import config, log
 
 if config["keys.groq"]:
     client = Groq(api_key=config["keys.groq"])
-    ai: bool = True
+    groq_key: bool = True
 else:
     log("warn", "API Key for Groq Required. Continuing without AI.")
-    ai: bool = False
+    groq_key: bool = False
 
 
 def ask_ai(question: str) -> None:
@@ -36,7 +36,7 @@ def main() -> None:
     userinput = input("> ")
     match userinput:
         case _:
-            if ai:
+            if groq_key:
                 ask_ai(userinput)
             else:
                 log("warn", "AI was attempted to be triggered but no API Key was set.")
