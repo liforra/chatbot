@@ -27,15 +27,18 @@ else:
     groq_key: bool = False
 
 
-
-
 if not sys.stdout.isatty():
-    log("warn", "Dieses Terminal unterstützt keine ANSI Codes. Falls diese Nachricht falsch ist, bitte kontaktieren sie den Developer von liforra-utils")
+    log(
+        "warn",
+        "Dieses Terminal unterstützt keine ANSI Codes. Falls diese Nachricht falsch ist, bitte kontaktieren sie den Developer von liforra-utils",
+    )
+
+
 def append_message(msg_list: list, message: str, role: str) -> list:
     log("debug", f"msg_list: {msg_list}")
     log("debug", f"message: {message}")
     log("debug", f"role: {role}")
-    
+
     if role not in (("user", "assistant", "system")):
         log("fatal", "Role Must be Assistant, User or System.")
     message_dict = {
@@ -52,7 +55,7 @@ def ask_ai(messages: list) -> list:
     global modelName
     completion: client = client.chat.completions.create(
         model=modelName,
-        messages= messages,
+        messages=messages,
         temperature=1,
         max_completion_tokens=8192,
         top_p=1,
@@ -74,8 +77,6 @@ def ask_ai(messages: list) -> list:
 
 first_question = True
 
-
-first_question = True
 
 def mainloop() -> None:
     global messages, first_question
@@ -107,28 +108,60 @@ def mainloop() -> None:
 
             match text:
                 case _ if "geht nicht an" in text or "startet nicht" in text:
-                    hardcoded_response = color["green"] + "Schalten Sie den Computer aus, prüfen Sie das Stromkabel und starten Sie ihn erneut. Sollte immer noch nichts passieren, trennen Sie alle Geräte und starten Sie nur den Computer neu." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Schalten Sie den Computer aus, prüfen Sie das Stromkabel und starten Sie ihn erneut. Sollte immer noch nichts passieren, trennen Sie alle Geräte und starten Sie nur den Computer neu."
+                        + color["reset"]
+                    )
 
                 case _ if "anmelden" in text or "login" in text:
-                    hardcoded_response = color["green"] + "Überprüfen Sie die Feststelltaste und stellen Sie sicher, dass Sie das richtige Passwort verwenden. Versuchen Sie danach, sich erneut anzumelden." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Überprüfen Sie die Feststelltaste und stellen Sie sicher, dass Sie das richtige Passwort verwenden. Versuchen Sie danach, sich erneut anzumelden."
+                        + color["reset"]
+                    )
 
                 case _ if "internet" in text:
-                    hardcoded_response = color["green"] + "Starten Sie den Router neu und prüfen Sie die Verbindung. Testen Sie danach, ob andere Webseiten erreichbar sind." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Starten Sie den Router neu und prüfen Sie die Verbindung. Testen Sie danach, ob andere Webseiten erreichbar sind."
+                        + color["reset"]
+                    )
 
                 case _ if "drucker" in text:
-                    hardcoded_response = color["green"] + "Prüfen Sie, ob der Drucker eingeschaltet ist, Papier vorhanden ist und die Verbindung zum Computer korrekt ist. Danach starten Sie einen Testdruck." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Prüfen Sie, ob der Drucker eingeschaltet ist, Papier vorhanden ist und die Verbindung zum Computer korrekt ist. Danach starten Sie einen Testdruck."
+                        + color["reset"]
+                    )
 
                 case _ if "bildschirm" in text or "schwarz" in text:
-                    hardcoded_response = color["green"] + "Überprüfen Sie, ob der Bildschirm eingeschaltet ist und das Kabel fest sitzt. Testen Sie ggf. ein anderes Kabel oder einen anderen Anschluss." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Überprüfen Sie, ob der Bildschirm eingeschaltet ist und das Kabel fest sitzt. Testen Sie ggf. ein anderes Kabel oder einen anderen Anschluss."
+                        + color["reset"]
+                    )
 
                 case _ if "kein ton" in text:
-                    hardcoded_response = color["green"] + "Überprüfen Sie, ob die Lautsprecher angeschaltet sind und die Lautstärke hoch genug ist. Prüfen Sie auch, ob der Ton am Computer nicht stummgeschaltet ist." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Überprüfen Sie, ob die Lautsprecher angeschaltet sind und die Lautstärke hoch genug ist. Prüfen Sie auch, ob der Ton am Computer nicht stummgeschaltet ist."
+                        + color["reset"]
+                    )
 
                 case _ if "gelöscht" in text:
-                    hardcoded_response = color["green"] + "Falls Sie Dateien versehentlich gelöscht haben, prüfen Sie den Papierkorb. Wenn sie dort nicht sind, nutzen Sie ein Wiederherstellungsprogramm." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Falls Sie Dateien versehentlich gelöscht haben, prüfen Sie den Papierkorb. Wenn sie dort nicht sind, nutzen Sie ein Wiederherstellungsprogramm."
+                        + color["reset"]
+                    )
 
                 case _ if "langsam" in text:
-                    hardcoded_response = color["green"] + "Starten Sie den Computer neu und schließen Sie unnötige Programme. Prüfen Sie, ob genügend Speicherplatz frei ist." + color["reset"]
+                    hardcoded_response = (
+                        color["green"]
+                        + "Starten Sie den Computer neu und schließen Sie unnötige Programme. Prüfen Sie, ob genügend Speicherplatz frei ist."
+                        + color["reset"]
+                    )
 
                 case _:
                     handled = False
@@ -147,21 +180,27 @@ def mainloop() -> None:
             messages = append_message(messages, response, "assistant")
         else:
             log("warn", "AI was attempted to be triggered but no API Key was set.")
-            print(color["red"] + "Leider habe ich Sie nicht ganz verstanden. Bitte versuchen Sie es noch einmal." + color["reset"])
+            print(
+                color["red"]
+                + "Leider habe ich Sie nicht ganz verstanden. Bitte versuchen Sie es noch einmal."
+                + color["reset"]
+            )
+
 
 messages: list
+
+
 def main() -> None:
     global messages
     messages = [
-            {
-                "role": "system",
-                "content": f"{system_prompt}",
-            },
-        ]
+        {
+            "role": "system",
+            "content": f"{system_prompt}",
+        },
+    ]
     print("Wie kann ich dir weiterhelfen?")
     mainloop()
     print("bye bye")
-    
 
 
 if __name__ == "__main__":
