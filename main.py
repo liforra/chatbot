@@ -12,10 +12,11 @@ if config["log.file"]:
     set_log_file(config["log.file"])
 else:
     set_log_file(r"./chatbot.log")
+if config["model.name"]:
+    modelName: str = config["model.name"]
+else:
+    modelName: str = "openai/gpt-oss-120b"
 
-
-
-set_log_file(r"./chatbot.log")
 if config["keys.groq"]:
     client = Groq(api_key=config["keys.groq"])
     groq_key: bool = True
@@ -24,6 +25,8 @@ if config["keys.groq"]:
 else:
     log("warn", "API Key for Groq Required. Continuing without AI.")
     groq_key: bool = False
+
+
 
 
 if not sys.stdout.isatty():
@@ -46,8 +49,9 @@ def append_message(msg_list: list, message: str, role: str) -> list:
 
 
 def ask_ai(messages: list) -> list:
+    global modelName
     completion: client = client.chat.completions.create(
-        model="openai/gpt-oss-120b",
+        model=modelName,
         messages= messages,
         temperature=1,
         max_completion_tokens=8192,
