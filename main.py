@@ -75,11 +75,11 @@ def ask_ai(messages: list) -> list:
     return full_response
 
 
-first_question = True
+first_question: bool = True
 
 
 def mainloop() -> None:
-    global messages, first_question
+    global messages, first_question, groq_key
 
     while True:
         # Prompt user
@@ -98,6 +98,8 @@ def mainloop() -> None:
                     log("warn", "Command not found.")
                     print(color["red"] + "Befehl nicht gefunden." + color["reset"])
             continue
+        if not groq_key:
+            first_question = True
 
         # Hardcoded response only on first question
         if first_question:
@@ -110,7 +112,7 @@ def mainloop() -> None:
                 case _ if "geht nicht an" in text or "startet nicht" in text:
                     hardcoded_response = (
                         color["green"]
-                        + "Schalten Sie den Computer aus, prüfen Sie das Stromkabel und starten Sie ihn erneut. Sollte immer noch nichts passieren, trennen Sie alle Geräte und starten Sie nur den Computer neu."
+                        + "Schalten Sie das Geraät aus, prüfen Sie das Stromkabel und starten Sie es erneut. Sollte immer noch nichts passieren, trennen Sie alle Geräte und starten Sie nur das Gerät neu."
                         + color["reset"]
                     )
 
@@ -168,18 +170,27 @@ def mainloop() -> None:
 
             if handled:
                 print(hardcoded_response)
-                messages = append_message(messages, userinput, "user")
-                messages = append_message(messages, hardcoded_response, "assistant")
+                if groq_key:
+                    messages = append_message(messages, userinput, "user")
+                    messages = append_message(messages, hardcoded_response, "assistant")
+                
                 continue
 
         # Fallback: AI response
+        global response
         if groq_key:
             print(color["yellow"] + "Ralf schreibt..." + color["reset"])
             messages = append_message(messages, userinput, "user")
-            response = ask_ai(messages)
-            messages = append_message(messages, response, "assistant")
+            try: 
+                response = ask_ai(messages)
+                messages = append_message(messages, response, "assistant")
+            except Exception as e:
+                log("warn", "No connection to Groq, Advanced AI features are turned off now.")
+                groq_key = False
+
+                
         else:
-            log("warn", "AI was attempted to be triggered but no API Key was set.")
+            log("warn", "AI was attempted to be triggered but no API Key was set, or Internet connection was lost.")
             print(
                 color["red"]
                 + "Leider habe ich Sie nicht ganz verstanden. Bitte versuchen Sie es noch einmal."
@@ -192,12 +203,13 @@ messages: list
 
 def main() -> None:
     global messages
-    messages = [
-        {
-            "role": "system",
-            "content": f"{system_prompt}",
-        },
-    ]
+    if config["keys.groq"]:
+        messages = [
+            {
+                "role": "system",
+                "content": f"{system_prompt}",
+            },
+        ]
     print("Wie kann ich dir weiterhelfen?")
     mainloop()
     print("bye bye")
