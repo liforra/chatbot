@@ -211,8 +211,11 @@ def main() -> None:
             },
         ]
     print("Wie kann ich dir weiterhelfen?")
-    mainloop()
-    print("bye bye")
+    try:
+        mainloop()
+    except KeyboardInterrupt:
+        ...
+    print("\nIch hoffe ich konnte ihnen helfen, bis zum nächsten mal.")
 
 
 if __name__ == "__main__":
